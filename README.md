@@ -52,4 +52,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Feel free to customize this README file further to suit your app's specific requirements and implementation details.
