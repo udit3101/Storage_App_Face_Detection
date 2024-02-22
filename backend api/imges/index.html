@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Images</title>
+</head>
+<body>
+    <h1>Display Images</h1>
+    <form id="usernameForm">
+        <label for="username">Enter Username:</label>
+        <input type="text" id="usernameInput" name="username" placeholder="Username" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="imageLinksContainer"></div>
+    <div id="imageContainer"></div>
+
+    <script>
+        document.getElementById('usernameForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('usernameInput').value;
+            fetch(`/images/${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const imageLinksContainer = document.getElementById('imageLinksContainer');
+                    imageLinksContainer.innerHTML = '';
+                    if (data.images.length > 0) {
+                        data.images.forEach(imageUrl => {
+                            const link = document.createElement('a');
+                            link.href = '#'; // Using '#' as a placeholder
+                            link.textContent = imageUrl;
+                            link.style.display = 'block'; // Display links on separate lines
+                            link.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                fetchImage(imageUrl);
+                            });
+                            imageLinksContainer.appendChild(link);
+                        });
+                    } else {
+                        imageLinksContainer.textContent = 'No images found for the username.';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function fetchImage(imageUrl) {
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const imageContainer = document.getElementById('imageContainer');
+                    imageContainer.innerHTML = ''; // Clear previous image
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    img.style.width = '100%'; // Adjust the width as needed
+                    imageContainer.appendChild(img);
+                })
+                .catch(error => console.error('Error fetching image:', error));
+        }
+    </script>
+</body>
+</html>
