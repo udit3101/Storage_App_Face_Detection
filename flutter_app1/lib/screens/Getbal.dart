@@ -23,12 +23,39 @@ class _GetBalancePageState extends State<GetBalancePage> {
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   int userBalance = 0;
   bool showBalance = false;
+  String? username; // Declare username variable
 
   @override
   void initState() {
     super.initState();
     _getUserBalance();
+    _fetchUserData(); // Call function to fetch username
   }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final String? fetchedUsername = await fetchUsername(widget.userEmail);
+      setState(() {
+        username = fetchedUsername; // Set the fetched username
+      });
+    } catch (e) {
+      print('Error fetching username: $e');
+    }
+  }
+
+
+  Future<String?> fetchUsername(String email) async {
+    final response = await http.get(Uri.parse('http://192.168.132.76:3000/getUsername?email=$email'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return data['name'];
+    } else {
+      throw Exception('Failed to load username');
+    }
+  }
+
+
 
 
   Future<void> _getUserBalance() async {
@@ -72,33 +99,64 @@ class _GetBalancePageState extends State<GetBalancePage> {
                 flipOnTouch: false,
                 front: Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.lightBlueAccent
-
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.lightBlueAccent,
                   ),
-                  width: 400,
+                  width: 380,
                   height: 200,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  child:Column(
+
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+
+                     Padding(padding: EdgeInsets.only(top: 12,bottom: 6),
+                     child:  Text("User Details",style: TextStyle(fontSize: 30),),
+                         ),
+                      Padding(padding: EdgeInsets.only(top:10),child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text("Username",style: TextStyle(fontSize: 22),),
-                          SizedBox(height: 10,),
-                          Text("Email",style: TextStyle(fontSize: 22),),
-                          SizedBox(height: 10,),
-                          Text("Phone",style: TextStyle(fontSize: 22),),
+                          Icon(
+                            Icons.person,
+                            size: 80,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Username: ', // Use fetched username
+                                    style: TextStyle(fontSize: 26),
+                                  ),
+                                  Text(
+                                    username ?? 'Username', // Use fetched username
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Email: ', // Use fetched username
+                                    style: TextStyle(fontSize: 26),
+                                  ),
+                                  Text(
+                                    widget.userEmail, // Use fetched username
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ) ,
 
 
+
+                            ],
+                          ),
 
                         ],
-                      ),
-                      Icon(Icons.verified_user_outlined,
-                        size: 100,)
+                      ))
                     ],
-                  ),
-
+                  )
                 ),
                 back:Container(
                   decoration: BoxDecoration(

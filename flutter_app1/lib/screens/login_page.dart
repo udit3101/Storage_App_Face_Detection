@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(25),
                   )),
                 ),
-                SizedBox(height: 16.0),
+                SizedBox(height: 10.0),
                 TextField(
                   controller: passwordController,
                   decoration: InputDecoration(labelText: 'Password',border: OutlineInputBorder(
